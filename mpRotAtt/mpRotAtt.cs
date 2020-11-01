@@ -10,12 +10,12 @@
 
     public class MpRotAtt
     {
-        private const string LangItem = "mpRotAtt";
-
         [CommandMethod("ModPlus", "mpRotAtt", CommandFlags.UsePickSet)]
         public static void Main()
         {
+#if !DEBUG
             Statistic.SendCommandStarting(new ModPlusConnector());
+#endif
             try
             {
                 var ed = AcApp.DocumentManager.MdiActiveDocument.Editor;
@@ -25,13 +25,13 @@
                 var filter = new SelectionFilter(filList);
                 var opts = new PromptSelectionOptions
                 {
-                    MessageForAdding = "\n" + Language.GetItem(LangItem, "msg1")
+                    MessageForAdding = $"\n{Language.GetItem("msg1")}"
                 };
                 var res = ed.GetSelection(opts, filter);
                 if (res.Status != PromptStatus.OK)
                     return;
 
-                var pdo = new PromptDoubleOptions("\n" + Language.GetItem(LangItem, "msg2")) { DefaultValue = 0 };
+                var pdo = new PromptDoubleOptions($"\n{Language.GetItem("msg2")}") { DefaultValue = 0 };
                 var pdr = ed.GetDouble(pdo);
                 var ang = pdr.Value;
                 if (pdr.Status == PromptStatus.OK)
@@ -50,7 +50,7 @@
                             foreach (ObjectId attId in attCol)
                             {
                                 var attRef = (AttributeReference)tr.GetObject(attId, OpenMode.ForWrite);
-                                
+
                                 attRef.Rotation = ang * Math.PI / 180.0;
                             }
                         }
